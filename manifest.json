@@ -3,9 +3,6 @@
   "name": "SPA",
   "description": "SPA Chrome Extension.",
   "version": "0.1",
-  "background": {
-    "service_worker": "service-worker.js"
-  },
   "content_scripts": [
     {
       "matches": ["https://calendar.google.com/*"],
