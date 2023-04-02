@@ -24,7 +24,7 @@ function handleDialog() {
             possibleThisAndFollowingBtn[1].checked = true;
             console.log("[SPA] Found and clicked \"this and following events\" button.");
         }
-        delay(200, pressOkBtn);
+        delay(100, pressOkBtn);
     }
     else {
         pressOkBtn();
@@ -37,7 +37,7 @@ function pressOkBtn() {
         possibleOkBtn[0].click();
         console.log("[SPA] Found and clicked OK button.");
     }
-    delay(200, handleDialog);
+    delay(100, handleDialog);
 }
 
 main();
