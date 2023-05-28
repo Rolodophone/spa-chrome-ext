@@ -19,16 +19,22 @@ function delay(time, func) {
 
 function handleDialog() {
     if (shiftIsPressed) {
-        let possibleThisAndFollowingBtn = document.getElementsByClassName("VfPpkd-gBXA9-bMcfAe");
-        if (possibleThisAndFollowingBtn.length === 3) {
-            possibleThisAndFollowingBtn[1].checked = true;
-            console.log("[SPA] Found and clicked \"this and following events\" button.");
-        }
-        delay(100, pressOkBtn);
+    	pressFollowingEventsBtn();
+    	delay(100, pressOkBtn);
+    	delay(200, handleDialog);
     }
     else {
         pressOkBtn();
+        delay(100, handleDialog);
     }
+}
+
+function pressFollowingEventsBtn() {
+	let possibleThisAndFollowingBtn = document.getElementsByClassName("VfPpkd-gBXA9-bMcfAe");
+	if (possibleThisAndFollowingBtn.length === 3) {
+		possibleThisAndFollowingBtn[1].checked = true;
+		console.log("[SPA] Found and clicked \"this and following events\" button.");
+	}
 }
 
 function pressOkBtn() {
@@ -37,7 +43,6 @@ function pressOkBtn() {
         possibleOkBtn[0].click();
         console.log("[SPA] Found and clicked OK button.");
     }
-    delay(100, handleDialog);
 }
 
 main();
