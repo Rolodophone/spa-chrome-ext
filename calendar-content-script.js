@@ -5,9 +5,11 @@ function main() {
 
     document.addEventListener("keydown", (event) => {
         shiftIsPressed = event.shiftKey;
+        console.log("[SPA] Shift key pressed: "+shiftIsPressed+".")
     });
     document.addEventListener("keyup", (event) => {
         shiftIsPressed = event.shiftKey;
+        console.log("[SPA] Shift key pressed: "+shiftIsPressed+".")
     });
 
     delay(1000, handleDialog);
@@ -31,7 +33,7 @@ function handleDialog() {
 
 function pressFollowingEventsBtn() {
 	let possibleThisAndFollowingBtn = document.getElementsByClassName("VfPpkd-gBXA9-bMcfAe");
-	if (possibleThisAndFollowingBtn.length === 3) {
+	if (possibleThisAndFollowingBtn.length === 2 || possibleThisAndFollowingBtn.length === 3) {
 		possibleThisAndFollowingBtn[1].checked = true;
 		console.log("[SPA] Found and clicked \"this and following events\" button.");
 	}
