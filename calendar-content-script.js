@@ -24,6 +24,12 @@ function delay(time, func) {
 }
 
 function handleDialog() {
+    // Do not auto handle dialog when editing event, as this feature is not intuitive in this case
+    if (window.location.href.includes("eventedit")) {
+        delay(100, handleDialog);
+        return;
+    }
+
     if (shiftIsPressed) {
     	pressFollowingEventsBtn();
     	delay(100, pressOkBtn);
