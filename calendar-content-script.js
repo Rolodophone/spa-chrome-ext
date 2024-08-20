@@ -4,12 +4,16 @@ function main() {
     console.log("[SPA] Loaded.");
 
     document.addEventListener("keydown", (event) => {
-        shiftIsPressed = event.shiftKey;
-        console.log("[SPA] Shift key pressed: "+shiftIsPressed+".")
+        if (event.key === "Shift" && !shiftIsPressed) {
+            shiftIsPressed = true;
+            console.log("[SPA] Shift key pressed.")
+        }
     });
     document.addEventListener("keyup", (event) => {
-        shiftIsPressed = event.shiftKey;
-        console.log("[SPA] Shift key pressed: "+shiftIsPressed+".")
+        if (event.key === "Shift" && shiftIsPressed) {
+            shiftIsPressed = false;
+            console.log("[SPA] Shift key released.")
+        }
     });
 
     delay(1000, handleDialog);
