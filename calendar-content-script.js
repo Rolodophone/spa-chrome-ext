@@ -8,7 +8,13 @@ function main() {
             shiftIsPressed = true;
             console.log("[SPA] Shift key pressed.")
         }
+
+        // Autocomplete event title
+        if (document.activeElement.className === "VfPpkd-fmcmS-wGMbrd ") {
+            console.log("[SPA] Autocompleting event title.");
+        }
     });
+
     document.addEventListener("keyup", (event) => {
         if (event.key === "Shift" && shiftIsPressed) {
             shiftIsPressed = false;
