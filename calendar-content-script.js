@@ -1,3 +1,27 @@
+let autoCompletions = {
+    events: [
+        {title: "EA Bristol", calendar: "💡 EA"},
+        {title: "Workout + post-workout + shower", calendar: "🧑 Personal"},
+        {title: "Piano", calendar: "🧑 Personal"},
+        {title: "Programming", calendar: "🧑 Personal"},
+        {title: "Leisure", calendar: "🖥️ Leisure"},
+        {title: "Reading", calendar: "🧑 Personal"},
+        {title: "Language-learning", calendar: "🧑 Personal"},
+        {title: "Shower", calendar: "🧑 Personal"},
+        {title: "Tasks", calendar: "✅ Tasks"},
+        {title: "Family", calendar: "👬 Social"},
+        {title: "Friends", calendar: "👬 Social"},
+        {title: "TV", calendar: "🖥️ Leisure"},
+        {title: "Gaming", calendar: "🖥️ Leisure"},
+        {title: "Distraction", calendar: "⏳Distraction"},
+        {title: "Morning routine", calendar: "📋 Daily"},
+        {title: "Social thinking", calendar: "🧑 Personal"},
+        {title: "Shopping", calendar: "✅ Tasks"},
+        {title: "Emails/messages", calendar: "✅ Tasks"},
+        {title: "Task management", calendar: "✅ Tasks"},
+    ]
+}
+
 let shiftIsPressed = false;
 
 function main() {
@@ -8,11 +32,6 @@ function main() {
             shiftIsPressed = true;
             console.log("[SPA] Shift key pressed.")
         }
-
-        // Autocomplete event title
-        if (document.activeElement.className === "VfPpkd-fmcmS-wGMbrd ") {
-            console.log("[SPA] Autocompleting event title.");
-        }
     });
 
     document.addEventListener("keyup", (event) => {
@@ -21,6 +40,33 @@ function main() {
             console.log("[SPA] Shift key released.")
         }
     });
+
+    document.addEventListener("beforeinput", event => {
+        // Autocomplete event title
+        if (document.activeElement.className === "VfPpkd-fmcmS-wGMbrd " &&
+                event.inputType === "insertText") {
+
+            console.log("[SPA] Autocompleting event title.");
+            let input = document.activeElement;
+            let inputValueBefore = input.value;
+            let inputCaretPosition = input.selectionEnd;
+
+            if (inputCaretPosition === inputValueBefore.length) { // Only autocomplete if caret is at the end
+                console.log("event.data: " + event.data)
+                let inputValueAfter = inputValueBefore.substring(0, input.selectionStart) + event.data;
+                let autoCompleteCandidates = autoCompletions.events.filter(
+                    (event) => event.title.startsWith(inputValueAfter));
+                console.log("autoCompleteCandidates: " + autoCompleteCandidates);
+                if (autoCompleteCandidates.length >= 1) {
+                    input.value = autoCompleteCandidates[0].title;
+                    console.log("new input.value: " + input.value);
+                    console.log("inputValueAfter: " + inputValueAfter);
+                    input.setSelectionRange(inputValueAfter.length, -1);
+                    event.preventDefault()  //prevent typed character replacing the autocompleted text
+                }
+            }
+        }
+    })
 
     delay(1000, handleDialog);
 }
