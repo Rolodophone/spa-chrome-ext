@@ -1,3 +1,5 @@
+// WARNING: this file is public on my github so do not put any sensitive information here
+// Later I will move the autocompletion list to an untracked file
 let autoCompletions = {
     events: [
         {title: "EA Bristol", calendar: "💡 EA"},
@@ -30,39 +32,66 @@ function main() {
     document.addEventListener("keydown", (event) => {
         if (event.key === "Shift" && !shiftIsPressed) {
             shiftIsPressed = true;
-            console.log("[SPA] Shift key pressed.")
+            // console.log("[SPA] Shift key pressed.")
         }
     });
 
     document.addEventListener("keyup", (event) => {
         if (event.key === "Shift" && shiftIsPressed) {
             shiftIsPressed = false;
-            console.log("[SPA] Shift key released.")
+            // console.log("[SPA] Shift key released.")
         }
     });
 
     document.addEventListener("beforeinput", event => {
-        // Autocomplete event title
+        // Autocomplete event title & calendar
         if (document.activeElement.className === "VfPpkd-fmcmS-wGMbrd " &&
                 event.inputType === "insertText") {
 
-            console.log("[SPA] Autocompleting event title.");
-            let input = document.activeElement;
-            let inputValueBefore = input.value;
-            let inputCaretPosition = input.selectionEnd;
+            // console.log("[SPA] Autocompleting event title.");
+            let titleField = document.activeElement;
+            let titleBefore = titleField.value;
+            let caretPos = titleField.selectionEnd;
 
-            if (inputCaretPosition === inputValueBefore.length) { // Only autocomplete if caret is at the end
-                console.log("event.data: " + event.data)
-                let inputValueAfter = inputValueBefore.substring(0, input.selectionStart) + event.data;
+            if (caretPos === titleBefore.length) { // Only autocomplete if caret is at the end
+                // console.log("event.data: " + event.data)
+                let titleAfter = titleBefore.substring(0, titleField.selectionStart) + event.data;
                 let autoCompleteCandidates = autoCompletions.events.filter(
-                    (event) => event.title.startsWith(inputValueAfter));
-                console.log("autoCompleteCandidates: " + autoCompleteCandidates);
+                    (event) => event.title.startsWith(titleAfter));
+                // console.log("autoCompleteCandidates: " + autoCompleteCandidates);
+
                 if (autoCompleteCandidates.length >= 1) {
-                    input.value = autoCompleteCandidates[0].title;
-                    console.log("new input.value: " + input.value);
-                    console.log("inputValueAfter: " + inputValueAfter);
-                    input.setSelectionRange(inputValueAfter.length, -1);
+                    let chosenAutoCompletion = autoCompleteCandidates[0]
+
+                    // auto-complete title
+                    titleField.value = chosenAutoCompletion.title;
+                    // console.log("new titleField.value: " + titleField.value);
+                    // console.log("titleAfter: " + titleAfter);
+                    titleField.setSelectionRange(titleAfter.length, -1);
                     event.preventDefault()  //prevent typed character replacing the autocompleted text
+
+                    // auto-complete calendar
+                    let calendarListCandidates = document.getElementsByClassName(
+                        "VfPpkd-rymPhb r6B9Fd bwNLcf P2Hi5d VfPpkd-OJnkse")
+                    // console.log(calendarListCandidates);
+
+                    for (const calendarList of calendarListCandidates) {
+                        if (calendarList.getAttribute("aria-label") !== "List of calendars") continue;
+                        // console.log("[SPA] Found calendar list.");
+
+                        for (const elem of calendarList.children) {
+                            // console.log(elem)
+                            if (elem.tagName !== "LI") continue;
+                            let calendarName = elem.children[2].children[0].innerHTML;
+                            // console.log("innerHTML: " + calendarName);
+                            // console.log("Looking for: " + chosenAutoCompletion.calendar);
+                            if (calendarName === chosenAutoCompletion.calendar) {
+                                elem.click();
+                                // console.log("[SPA] Clicked calendar " + chosenAutoCompletion.calendar);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }
