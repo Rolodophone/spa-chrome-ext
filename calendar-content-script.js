@@ -1,30 +1,5 @@
-// WARNING: this file is public on my github so do not put any sensitive information here
-// Later I will move the autocompletion list to an untracked file
-let autoCompletions = {
-    events: [
-        {title: "EA Bristol", calendar: "💡 EA"},
-        {title: "Workout + post-workout + shower", calendar: "🧑 Personal"},
-        {title: "Piano", calendar: "🧑 Personal"},
-        {title: "Programming", calendar: "🧑 Personal"},
-        {title: "Leisure", calendar: "🖥️ Leisure"},
-        {title: "Reading", calendar: "🧑 Personal"},
-        {title: "Language-learning", calendar: "🧑 Personal"},
-        {title: "Shower", calendar: "🧑 Personal"},
-        {title: "Tasks", calendar: "✅ Tasks"},
-        {title: "Family", calendar: "👬 Social"},
-        {title: "Friends", calendar: "👬 Social"},
-        {title: "TV", calendar: "🖥️ Leisure"},
-        {title: "Gaming", calendar: "🖥️ Leisure"},
-        {title: "Distraction", calendar: "⏳Distraction"},
-        {title: "Morning routine", calendar: "📋 Daily"},
-        {title: "Social thinking", calendar: "🧑 Personal"},
-        {title: "Shopping", calendar: "✅ Tasks"},
-        {title: "Emails/messages", calendar: "✅ Tasks"},
-        {title: "Task management", calendar: "✅ Tasks"},
-    ]
-}
-
 let shiftIsPressed = false;
+let autoCompletions = null;
 
 function main() {
     console.log("[SPA] Loaded.");
@@ -33,6 +8,9 @@ function main() {
         if (event.key === "Shift" && !shiftIsPressed) {
             shiftIsPressed = true;
             // console.log("[SPA] Shift key pressed.")
+        }
+        else if (event.key === "Enter") {
+            trySaveAutoCompletion();
         }
     });
 
@@ -43,9 +21,27 @@ function main() {
         }
     });
 
+    document.addEventListener("focusin", (event) => {
+        // initialise things when focus moves to the event title field
+        if (event.target.className === "VfPpkd-fmcmS-wGMbrd " &&
+                event.target.getAttribute("aria-label") === "Add title") {
+            loadAutoCompletions()
+            console.log("autoCompletions:", autoCompletions);
+        }
+    });
+
+    document.addEventListener("click", (event) => {
+        console.log("event.target:", event.target)
+        if (event.target.parentElement !== null &&
+                event.target.parentElement.getAttribute("jsname") === "x8hlje") {
+            trySaveAutoCompletion();
+        }
+    });
+
     document.addEventListener("beforeinput", event => {
         // Autocomplete event title & calendar
         if (document.activeElement.className === "VfPpkd-fmcmS-wGMbrd " &&
+                event.target.getAttribute("aria-label") === "Add title" &&
                 event.inputType === "insertText") {
 
             // console.log("[SPA] Autocompleting event title.");
@@ -58,7 +54,7 @@ function main() {
                 let titleAfter = titleBefore.substring(0, titleField.selectionStart) + event.data;
                 let autoCompleteCandidates = autoCompletions.events.filter(
                     (event) => event.title.startsWith(titleAfter));
-                // console.log("autoCompleteCandidates: " + autoCompleteCandidates);
+                console.log("autoCompleteCandidates:", autoCompleteCandidates);
 
                 if (autoCompleteCandidates.length >= 1) {
                     let chosenAutoCompletion = autoCompleteCandidates[0]
@@ -98,6 +94,32 @@ function main() {
     })
 
     delay(1000, handleDialog);
+}
+
+function trySaveAutoCompletion() {
+    console.log("trySaveAutoCompletion");
+    let titleField = document.querySelector('.VfPpkd-fmcmS-wGMbrd[aria-label="Add title"]');
+    let calendarField = document.querySelector('.VfPpkd-TkwUic[jsname="oYxtQd"] .VfPpkd-uusGie-fmcmS-haAclf .VfPpkd-uusGie-fmcmS[jsname="Fb0Bif"][aria-label=""]');
+    console.log("titleField:", titleField);
+    console.log("calendarField:", calendarField);
+
+    // in this case we're not saving an event so no need to do anything
+    if (titleField === null || calendarField === null) return;
+
+    let titleText = titleField.value;
+    let calendarText = calendarField.innerHTML;
+    console.log("Saving auto-completion: " + titleText + " in " + calendarText);
+
+    loadAutoCompletions()
+    autoCompletions.events.unshift({title: titleText, calendar: calendarText});
+    localStorage.setItem("autoCompletions", JSON.stringify(autoCompletions));
+}
+
+function loadAutoCompletions() {
+    autoCompletions = JSON.parse(localStorage.getItem("autoCompletions"));
+    if (autoCompletions === null) {
+        autoCompletions = {events: []};
+    }
 }
 
 function delay(time, func) {
