@@ -1,6 +1,8 @@
 let shiftIsPressed = false;
 let autoCompletions = null;
 
+autoCompletions = null
+
 function main() {
     console.log("[SPA] Loaded.");
 
@@ -25,8 +27,10 @@ function main() {
         // initialise things when focus moves to the event title field
         if (event.target.getAttribute("aria-label") === "Add title") {
             console.debug("focusin on add title field")
-            loadAutoCompletions()
-            console.log("autoCompletions:", autoCompletions);
+            if (autoCompletions === null) {
+                loadAutoCompletions()
+                console.log("autoCompletions:", autoCompletions);
+            }
         }
     });
 
@@ -109,7 +113,9 @@ function trySaveAutoCompletion() {
     let calendarText = calendarField.innerHTML;
     console.log("Saving auto-completion: " + titleText + " in " + calendarText);
 
-    loadAutoCompletions()
+    // This first line doesn't actually work, I think because !== isn't comparing the JSON objects properly
+    // To fix this, maybe use a library such as Lodash which actually has a good collections API
+    autoCompletions.events = autoCompletions.events.filter(x => x !== {title: titleText, calendar: calendarText})
     autoCompletions.events.unshift({title: titleText, calendar: calendarText});
     localStorage.setItem("autoCompletions", JSON.stringify(autoCompletions));
 }
