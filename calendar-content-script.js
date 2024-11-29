@@ -7,7 +7,7 @@ function main() {
     document.addEventListener("keydown", (event) => {
         if (event.key === "Shift" && !shiftIsPressed) {
             shiftIsPressed = true;
-            // console.log("[SPA] Shift key pressed.")
+            console.log("[SPA] Shift key pressed.")
         }
         else if (event.key === "Enter") {
             trySaveAutoCompletion();
@@ -17,21 +17,21 @@ function main() {
     document.addEventListener("keyup", (event) => {
         if (event.key === "Shift" && shiftIsPressed) {
             shiftIsPressed = false;
-            // console.log("[SPA] Shift key released.")
+            console.log("[SPA] Shift key released.")
         }
     });
 
     document.addEventListener("focusin", (event) => {
         // initialise things when focus moves to the event title field
-        if (event.target.className === "VfPpkd-fmcmS-wGMbrd " &&
-                event.target.getAttribute("aria-label") === "Add title") {
+        if (event.target.getAttribute("aria-label") === "Add title") {
+            console.debug("focusin on add title field")
             loadAutoCompletions()
             console.log("autoCompletions:", autoCompletions);
         }
     });
 
     document.addEventListener("click", (event) => {
-        console.log("event.target:", event.target)
+        console.debug("clicked on:", event.target)
         if (event.target.parentElement !== null &&
                 event.target.parentElement.getAttribute("jsname") === "x8hlje") {
             trySaveAutoCompletion();
@@ -40,11 +40,10 @@ function main() {
 
     document.addEventListener("beforeinput", event => {
         // Autocomplete event title & calendar
-        if (document.activeElement.className === "VfPpkd-fmcmS-wGMbrd " &&
-                event.target.getAttribute("aria-label") === "Add title" &&
+        if (event.target.getAttribute("aria-label") === "Add title" &&
                 event.inputType === "insertText") {
 
-            // console.log("[SPA] Autocompleting event title.");
+            console.debug("Autocompleting event title.");
             let titleField = document.activeElement;
             let titleBefore = titleField.value;
             let caretPos = titleField.selectionEnd;
@@ -97,11 +96,11 @@ function main() {
 }
 
 function trySaveAutoCompletion() {
-    console.log("trySaveAutoCompletion");
-    let titleField = document.querySelector('.VfPpkd-fmcmS-wGMbrd[aria-label="Add title"]');
+    console.debug("trySaveAutoCompletion");
+    let titleField = document.querySelector('.Fgl6fe-fmcmS-wGMbrd[aria-label="Add title"]');
     let calendarField = document.querySelector('.VfPpkd-TkwUic[jsname="oYxtQd"] .VfPpkd-uusGie-fmcmS-haAclf .VfPpkd-uusGie-fmcmS[jsname="Fb0Bif"][aria-label=""]');
-    console.log("titleField:", titleField);
-    console.log("calendarField:", calendarField);
+    console.debug("titleField:", titleField);
+    console.debug("calendarField:", calendarField);
 
     // in this case we're not saving an event so no need to do anything
     if (titleField === null || calendarField === null) return;
@@ -145,18 +144,20 @@ function handleDialog() {
 }
 
 function pressFollowingEventsBtn() {
-	let possibleThisAndFollowingBtn = document.getElementsByClassName("VfPpkd-gBXA9-bMcfAe");
-	if (possibleThisAndFollowingBtn.length === 2 || possibleThisAndFollowingBtn.length === 3) {
+	let possibleThisAndFollowingBtn = document.getElementsByClassName("GhEnC-gBXA9-bMcfAe");
+	// console.debug("Found %d candidates for 'this and following events' button", possibleThisAndFollowingBtn.length)
+    if (possibleThisAndFollowingBtn.length === 2 || possibleThisAndFollowingBtn.length === 3) {
 		possibleThisAndFollowingBtn[1].checked = true;
-		console.log("[SPA] Found and clicked \"this and following events\" button.");
+		console.debug("Found and clicked \"this and following events\" button.");
 	}
 }
 
 function pressOkBtn() {
-    let possibleOkBtn = document.getElementsByClassName("uArJ5e UQuaGc kCyAyd l3F1ye ARrCac HvOprf evJWRb M9Bg4d");
+    let possibleOkBtn = document.getElementsByClassName("UywwFc-LgbsSe UywwFc-LgbsSe-OWXEXe-dgl2Hf");
+    // console.debug("Found %d candidates for 'ok' button", possibleOkBtn.length)
     if (possibleOkBtn.length === 1) {
         possibleOkBtn[0].click();
-        console.log("[SPA] Found and clicked OK button.");
+        console.debug("Found and clicked OK button.");
     }
 }
 
