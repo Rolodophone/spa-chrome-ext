@@ -3,25 +3,27 @@ let autoCompletions = null;
 
 autoCompletions = null
 
+let handleDialogIterationsLeft = 0;
+
 function main() {
     console.log("[SPA] Loaded.");
 
     document.addEventListener("keydown", (event) => {
-        if (event.key === "Shift" && !shiftIsPressed) {
-            shiftIsPressed = true;
-            console.log("[SPA] Shift key pressed.")
-        }
-        else if (event.key === "Enter") {
+        // if (event.key === "Shift" && !shiftIsPressed) {
+        //     shiftIsPressed = true;
+        //     console.log("[SPA] Shift key pressed.")
+        // }
+        if (event.key === "Enter") {
             trySaveAutoCompletion();
         }
     });
 
-    document.addEventListener("keyup", (event) => {
-        if (event.key === "Shift" && shiftIsPressed) {
-            shiftIsPressed = false;
-            console.log("[SPA] Shift key released.")
-        }
-    });
+    // document.addEventListener("keyup", (event) => {
+    //     if (event.key === "Shift" && shiftIsPressed) {
+    //         shiftIsPressed = false;
+    //         console.log("[SPA] Shift key released.")
+    //     }
+    // });
 
     document.addEventListener("focusin", (event) => {
         // initialise things when focus moves to the event title field
@@ -96,7 +98,12 @@ function main() {
         }
     })
 
-    delay(1000, handleDialog);
+    document.addEventListener("drop", (event) => {
+        console.debug("drop event triggered");
+        console.debug("event.shiftKey: " + event.shiftKey)
+        shiftIsPressed = event.shiftKey
+        handleDialog(10)
+    });
 }
 
 function trySaveAutoCompletion() {
@@ -131,7 +138,20 @@ function delay(time, func) {
     new Promise(resolve => setTimeout(resolve, time)).then(func);
 }
 
-function handleDialog() {
+function handleDialog(iterations=null) {
+    // outermost call -> set this variable to keep track of iterations
+    if (iterations !== null) {
+        handleDialogIterationsLeft = iterations;
+    }
+
+    // finished desired number of iterations
+    if (handleDialogIterationsLeft === 0) {
+        return;
+    }
+    else {
+        handleDialogIterationsLeft--;
+    }
+
     // Do not auto handle dialog when editing event, as this feature is not intuitive in this case
     if (window.location.href.includes("eventedit")) {
         delay(100, handleDialog);
