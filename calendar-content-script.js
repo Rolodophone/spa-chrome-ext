@@ -9,7 +9,7 @@ function main() {
     document.addEventListener("keydown", (event) => {
         if (event.key === "Shift" && !shiftIsPressed) {
             shiftIsPressed = true;
-            console.log("[SPA] Shift key pressed.")
+            // console.log("[SPA] Shift key pressed.")
         }
         else if (event.key === "Enter") {
             trySaveAutoCompletion();
@@ -19,7 +19,7 @@ function main() {
     document.addEventListener("keyup", (event) => {
         if (event.key === "Shift" && shiftIsPressed) {
             shiftIsPressed = false;
-            console.log("[SPA] Shift key released.")
+            // console.log("[SPA] Shift key released.")
         }
     });
 
@@ -35,7 +35,7 @@ function main() {
     });
 
     document.addEventListener("click", (event) => {
-        console.debug("clicked on:", event.target)
+        // console.debug("clicked on:", event.target)
         if (event.target.parentElement !== null &&
                 event.target.parentElement.getAttribute("jsname") === "x8hlje") {
             trySaveAutoCompletion();
@@ -57,7 +57,7 @@ function main() {
                 let titleAfter = titleBefore.substring(0, titleField.selectionStart) + event.data;
                 let autoCompleteCandidates = autoCompletions.events.filter(
                     (event) => event.title.startsWith(titleAfter));
-                console.log("autoCompleteCandidates:", autoCompleteCandidates);
+                // console.log("autoCompleteCandidates:", autoCompleteCandidates);
 
                 if (autoCompleteCandidates.length >= 1) {
                     let chosenAutoCompletion = autoCompleteCandidates[0]
@@ -71,7 +71,8 @@ function main() {
 
                     // auto-complete calendar
                     let calendarListCandidates = document.getElementsByClassName(
-                        "VfPpkd-rymPhb r6B9Fd bwNLcf P2Hi5d VfPpkd-OJnkse")
+                        "W7g1Rb-rymPhb O68mGe-hqgu2c")
+                    // console.log("calendarListCandidates: ")
                     // console.log(calendarListCandidates);
 
                     for (const calendarList of calendarListCandidates) {
@@ -81,7 +82,7 @@ function main() {
                         for (const elem of calendarList.children) {
                             // console.log(elem)
                             if (elem.tagName !== "LI") continue;
-                            let calendarName = elem.children[2].children[0].innerHTML;
+                            let calendarName = elem.children[3].children[0].innerHTML;
                             // console.log("innerHTML: " + calendarName);
                             // console.log("Looking for: " + chosenAutoCompletion.calendar);
                             if (calendarName === chosenAutoCompletion.calendar) {
