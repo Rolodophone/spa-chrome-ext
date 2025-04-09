@@ -103,7 +103,7 @@ function main() {
 function trySaveAutoCompletion() {
     console.debug("[SPA] trySaveAutoCompletion");
     let titleField = document.querySelector('.Fgl6fe-fmcmS-wGMbrd[aria-label="Add title"]');
-    let calendarField = document.querySelector('.VfPpkd-TkwUic[jsname="oYxtQd"] .VfPpkd-uusGie-fmcmS-haAclf .VfPpkd-uusGie-fmcmS[jsname="Fb0Bif"][aria-label=""]');
+    let calendarField = document.querySelector('[aria-label="Calendar"][role="combobox"]');
     console.debug("[SPA] titleField:", titleField);
     console.debug("[SPA] calendarField:", calendarField);
 
@@ -111,7 +111,7 @@ function trySaveAutoCompletion() {
     if (titleField === null || calendarField === null) return;
 
     let titleText = titleField.value;
-    let calendarText = calendarField.innerHTML;
+    let calendarText = calendarField.innerText;
     console.log("[SPA] Saving auto-completion: " + titleText + " in " + calendarText);
 
     // This first line doesn't actually work, I think because !== isn't comparing the JSON objects properly
