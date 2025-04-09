@@ -26,10 +26,10 @@ function main() {
     document.addEventListener("focusin", (event) => {
         // initialise things when focus moves to the event title field
         if (event.target.getAttribute("aria-label") === "Add title") {
-            console.debug("focusin on add title field")
+            console.debug("[SPA] focusin on add title field")
             if (autoCompletions === null) {
                 loadAutoCompletions()
-                console.log("autoCompletions:", autoCompletions);
+                console.log("[SPA] autoCompletions:", autoCompletions);
             }
         }
     });
@@ -47,7 +47,7 @@ function main() {
         if (event.target.getAttribute("aria-label") === "Add title" &&
                 event.inputType === "insertText") {
 
-            console.debug("Autocompleting event title.");
+            console.debug("[SPA] Autocompleting event title.");
             let titleField = document.activeElement;
             let titleBefore = titleField.value;
             let caretPos = titleField.selectionEnd;
@@ -101,18 +101,18 @@ function main() {
 }
 
 function trySaveAutoCompletion() {
-    console.debug("trySaveAutoCompletion");
+    console.debug("[SPA] trySaveAutoCompletion");
     let titleField = document.querySelector('.Fgl6fe-fmcmS-wGMbrd[aria-label="Add title"]');
     let calendarField = document.querySelector('.VfPpkd-TkwUic[jsname="oYxtQd"] .VfPpkd-uusGie-fmcmS-haAclf .VfPpkd-uusGie-fmcmS[jsname="Fb0Bif"][aria-label=""]');
-    console.debug("titleField:", titleField);
-    console.debug("calendarField:", calendarField);
+    console.debug("[SPA] titleField:", titleField);
+    console.debug("[SPA] calendarField:", calendarField);
 
     // in this case we're not saving an event so no need to do anything
     if (titleField === null || calendarField === null) return;
 
     let titleText = titleField.value;
     let calendarText = calendarField.innerHTML;
-    console.log("Saving auto-completion: " + titleText + " in " + calendarText);
+    console.log("[SPA] Saving auto-completion: " + titleText + " in " + calendarText);
 
     // This first line doesn't actually work, I think because !== isn't comparing the JSON objects properly
     // To fix this, maybe use a library such as Lodash which actually has a good collections API
@@ -155,7 +155,7 @@ function pressFollowingEventsBtn() {
 	// console.debug("Found %d candidates for 'this and following events' button", possibleThisAndFollowingBtn.length)
     if (possibleThisAndFollowingBtn.length === 2 || possibleThisAndFollowingBtn.length === 3) {
 		possibleThisAndFollowingBtn[1].checked = true;
-		console.debug("Found and clicked \"this and following events\" button.");
+		console.debug("[SPA] Found and clicked \"this and following events\" button.");
 	}
 }
 
@@ -164,7 +164,7 @@ function pressOkBtn() {
     // console.debug("Found %d candidates for 'ok' button", possibleOkBtn.length)
     if (possibleOkBtn.length === 1) {
         possibleOkBtn[0].click();
-        console.debug("Found and clicked OK button.");
+        console.debug("[SPA] Found and clicked OK button.");
     }
 }
 
