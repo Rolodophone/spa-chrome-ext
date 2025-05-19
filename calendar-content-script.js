@@ -47,19 +47,39 @@ function main() {
         if (event.target.getAttribute("aria-label") === "Add title" &&
                 event.inputType === "insertText") {
 
-            console.debug("[SPA] Autocompleting event title.");
             let titleField = document.activeElement;
             let titleBefore = titleField.value;
             let caretPos = titleField.selectionEnd;
 
             if (caretPos === titleBefore.length) { // Only autocomplete if caret is at the end
-                // console.log("event.data: " + event.data)
+                console.log("[SPA] Autocompleting; autoCompletions:", autoCompletions);
+
+                // Find calendar list element
+                let calendarListCandidates = document.getElementsByClassName(
+                    "W7g1Rb-rymPhb O68mGe-hqgu2c")
+                // console.log("calendarListCandidates: ")
+                // console.log(calendarListCandidates);
+                let calendarList = null
+                for (const calendarListCandidate of calendarListCandidates) {
+                    if (calendarListCandidate.getAttribute("aria-label") !== "List of calendars") continue;
+                    // console.log("[SPA] Found calendar list.");
+                    calendarList = calendarListCandidate
+                    break;
+                }
+                if (calendarList === null) {
+                    console.error("[SPA] Could not find calendar list element.");
+                    return
+                }
+
+                // Check if there's a matching autocompletion
                 let titleAfter = titleBefore.substring(0, titleField.selectionStart) + event.data;
                 let autoCompleteCandidates = autoCompletions.events.filter(
                     (event) => event.title.startsWith(titleAfter));
                 // console.log("autoCompleteCandidates:", autoCompleteCandidates);
 
                 if (autoCompleteCandidates.length >= 1) {
+                    // Matching auto-completion found -> auto-complete
+
                     let chosenAutoCompletion = autoCompleteCandidates[0]
 
                     // auto-complete title
@@ -70,26 +90,35 @@ function main() {
                     event.preventDefault()  //prevent typed character replacing the autocompleted text
 
                     // auto-complete calendar
-                    let calendarListCandidates = document.getElementsByClassName(
-                        "W7g1Rb-rymPhb O68mGe-hqgu2c")
-                    // console.log("calendarListCandidates: ")
-                    // console.log(calendarListCandidates);
+                    for (const elem of calendarList.children) {
+                        // console.log(elem)
+                        if (elem.tagName !== "LI") continue;
+                        let calendarName = elem.children[3].children[0].innerHTML;
+                        // console.log("innerHTML: " + calendarName);
+                        // console.log("Looking for: " + chosenAutoCompletion.calendar);
+                        if (calendarName === chosenAutoCompletion.calendar) {
+                            elem.click();
+                            // console.log("[SPA] Clicked calendar " + chosenAutoCompletion.calendar);
+                            break;
+                        }
+                    }
+                }
 
-                    for (const calendarList of calendarListCandidates) {
-                        if (calendarList.getAttribute("aria-label") !== "List of calendars") continue;
-                        // console.log("[SPA] Found calendar list.");
+                else {
+                    // No match found -> just set calendar to last used
 
-                        for (const elem of calendarList.children) {
-                            // console.log(elem)
-                            if (elem.tagName !== "LI") continue;
-                            let calendarName = elem.children[3].children[0].innerHTML;
-                            // console.log("innerHTML: " + calendarName);
-                            // console.log("Looking for: " + chosenAutoCompletion.calendar);
-                            if (calendarName === chosenAutoCompletion.calendar) {
-                                elem.click();
-                                // console.log("[SPA] Clicked calendar " + chosenAutoCompletion.calendar);
-                                break;
-                            }
+                    let lastUsedCalendar = autoCompletions.events[0].calendar;
+
+                    for (const elem of calendarList.children) {
+                        // console.log(elem)
+                        if (elem.tagName !== "LI") continue;
+                        let calendarName = elem.children[3].children[0].innerHTML;
+                        // console.log("innerHTML: " + calendarName);
+                        // console.log("Looking for: " + chosenAutoCompletion.calendar);
+                        if (calendarName === lastUsedCalendar) {
+                            elem.click();
+                            // console.log("[SPA] Clicked calendar " + chosenAutoCompletion.calendar);
+                            break;
                         }
                     }
                 }
@@ -121,6 +150,8 @@ function trySaveAutoCompletion() {
     localStorage.setItem("autoCompletions", JSON.stringify(autoCompletions));
 }
 
+// This is only called once, on the first focusin event. Afterwards we just reuse the same object
+// in memory, as we do add any new events to it anyway.
 function loadAutoCompletions() {
     autoCompletions = JSON.parse(localStorage.getItem("autoCompletions"));
     if (autoCompletions === null) {
