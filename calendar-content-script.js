@@ -55,17 +55,7 @@ function main() {
                 console.log("[SPA] Autocompleting; autoCompletions:", autoCompletions);
 
                 // Find calendar list element
-                let calendarListCandidates = document.getElementsByClassName(
-                    "W7g1Rb-rymPhb O68mGe-hqgu2c")
-                // console.log("calendarListCandidates: ")
-                // console.log(calendarListCandidates);
-                let calendarList = null
-                for (const calendarListCandidate of calendarListCandidates) {
-                    if (calendarListCandidate.getAttribute("aria-label") !== "List of calendars") continue;
-                    // console.log("[SPA] Found calendar list.");
-                    calendarList = calendarListCandidate
-                    break;
-                }
+                let calendarList = document.querySelector('[aria-label="List of calendars"]');
                 if (calendarList === null) {
                     console.error("[SPA] Could not find calendar list element.");
                     return
