@@ -9,7 +9,7 @@ function main() {
     document.addEventListener("keydown", (event) => {
         if (event.key === "Shift" && !shiftIsPressed) {
             shiftIsPressed = true;
-            // console.log("[SPA] Shift key pressed.")
+//            console.log("[SPA] Shift key pressed.")
         }
         else if (event.key === "Enter") {
             trySaveAutoCompletion();
@@ -19,7 +19,7 @@ function main() {
     document.addEventListener("keyup", (event) => {
         if (event.key === "Shift" && shiftIsPressed) {
             shiftIsPressed = false;
-            // console.log("[SPA] Shift key released.")
+//            console.log("[SPA] Shift key released.")
         }
     });
 
@@ -161,11 +161,16 @@ function handleDialog() {
     }
 
     if (shiftIsPressed) {
-    	pressFollowingEventsBtn();
-    	delay(100, pressOkBtn);
-    	delay(200, handleDialog);
+//        console.debug("[SPA] Shift is pressed; handling dialog with 'this and following events' option.");
+    	if (pressFollowingEventsBtn()) {
+    	    delay(100, pressOkBtn);
+            delay(200, handleDialog);
+    	} else {
+            delay(100, handleDialog);
+        }
     }
     else {
+//        console.debug("[SPA] Shift is not pressed; handling dialog with default option.");
         pressOkBtn();
         delay(100, handleDialog);
     }
@@ -173,11 +178,13 @@ function handleDialog() {
 
 function pressFollowingEventsBtn() {
 	let possibleThisAndFollowingBtn = document.getElementsByClassName("GhEnC-gBXA9-bMcfAe");
-	// console.debug("Found %d candidates for 'this and following events' button", possibleThisAndFollowingBtn.length)
+//	console.debug("Found %d candidates for 'this and following events' button", possibleThisAndFollowingBtn.length)
     if (possibleThisAndFollowingBtn.length === 2 || possibleThisAndFollowingBtn.length === 3) {
 		possibleThisAndFollowingBtn[1].checked = true;
 		console.debug("[SPA] Found and clicked \"this and following events\" button.");
+		return true;
 	}
+	return false;
 }
 
 function pressOkBtn() {
@@ -186,7 +193,9 @@ function pressOkBtn() {
     if (possibleOkBtn.length === 1) {
         possibleOkBtn[0].click();
         console.debug("[SPA] Found and clicked OK button.");
+        return true;
     }
+    return false;
 }
 
 main();
