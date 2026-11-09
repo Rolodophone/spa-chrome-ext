@@ -52,6 +52,7 @@ function main() {
             let caretPos = titleField.selectionEnd;
 
             if (caretPos === titleBefore.length) { // Only autocomplete if caret is at the end
+                if (autoCompletions === null) loadAutoCompletions();
                 console.log("[SPA] Autocompleting; autoCompletions:", autoCompletions);
 
                 // Find calendar list element
@@ -80,37 +81,12 @@ function main() {
                     event.preventDefault()  //prevent typed character replacing the autocompleted text
 
                     // auto-complete calendar
-                    for (const elem of calendarList.children) {
-                        // console.log(elem)
-                        if (elem.tagName !== "LI") continue;
-                        let calendarName = elem.children[3].children[0].innerHTML;
-                        // console.log("innerHTML: " + calendarName);
-                        // console.log("Looking for: " + chosenAutoCompletion.calendar);
-                        if (calendarName === chosenAutoCompletion.calendar) {
-                            elem.click();
-                            // console.log("[SPA] Clicked calendar " + chosenAutoCompletion.calendar);
-                            break;
-                        }
-                    }
+                    selectCalendar(calendarList, chosenAutoCompletion.calendar);
                 }
 
-                else {
+                else if (autoCompletions.events.length > 0) {
                     // No match found -> just set calendar to last used
-
-                    let lastUsedCalendar = autoCompletions.events[0].calendar;
-
-                    for (const elem of calendarList.children) {
-                        // console.log(elem)
-                        if (elem.tagName !== "LI") continue;
-                        let calendarName = elem.children[3].children[0].innerHTML;
-                        // console.log("innerHTML: " + calendarName);
-                        // console.log("Looking for: " + chosenAutoCompletion.calendar);
-                        if (calendarName === lastUsedCalendar) {
-                            elem.click();
-                            // console.log("[SPA] Clicked calendar " + chosenAutoCompletion.calendar);
-                            break;
-                        }
-                    }
+                    selectCalendar(calendarList, autoCompletions.events[0].calendar);
                 }
             }
         }
@@ -129,13 +105,15 @@ function trySaveAutoCompletion() {
     // in this case we're not saving an event so no need to do anything
     if (titleField === null || calendarField === null) return;
 
+    if (autoCompletions === null) loadAutoCompletions();
+
     let titleText = titleField.value;
-    let calendarText = calendarField.innerText;
+    let calendarText = normaliseCalendarName(calendarField.textContent);
     console.log("[SPA] Saving auto-completion: " + titleText + " in " + calendarText);
 
-    // This first line doesn't actually work, I think because !== isn't comparing the JSON objects properly
-    // To fix this, maybe use a library such as Lodash which actually has a good collections API
-    autoCompletions.events = autoCompletions.events.filter(x => x !== {title: titleText, calendar: calendarText})
+    // Move this title/calendar pair to the front, removing any older copy of it
+    autoCompletions.events = autoCompletions.events.filter(
+        x => !(x.title === titleText && normaliseCalendarName(x.calendar) === calendarText));
     autoCompletions.events.unshift({title: titleText, calendar: calendarText});
     localStorage.setItem("autoCompletions", JSON.stringify(autoCompletions));
 }
@@ -147,6 +125,26 @@ function loadAutoCompletions() {
     if (autoCompletions === null) {
         autoCompletions = {events: []};
     }
+}
+
+// Calendar names can contain runs of whitespace (e.g. "🧭  Career") that are rendered
+// differently in different parts of the UI, so compare names with whitespace collapsed.
+function normaliseCalendarName(name) {
+    return name.replace(/\s+/g, " ").trim();
+}
+
+// Click the entry for the given calendar in the event dialog's list of calendars.
+// The list is built by Google Calendar from the user's calendars, so any calendar works.
+function selectCalendar(calendarList, calendarName) {
+    let wanted = normaliseCalendarName(calendarName);
+    for (const elem of calendarList.querySelectorAll(':scope > li')) {
+        if (normaliseCalendarName(elem.textContent) === wanted) {
+            elem.click();
+            return true;
+        }
+    }
+    console.warn("[SPA] Could not find calendar in list:", calendarName);
+    return false;
 }
 
 function delay(time, func) {
