@@ -1,5 +1,6 @@
 let shiftIsPressed = false;
 let autoCompletions = null;
+const MAX_AUTO_COMPLETIONS = 500;
 
 autoCompletions = null
 
@@ -115,6 +116,7 @@ function trySaveAutoCompletion() {
     autoCompletions.events = autoCompletions.events.filter(
         x => !(x.title === titleText && normaliseCalendarName(x.calendar) === calendarText));
     autoCompletions.events.unshift({title: titleText, calendar: calendarText});
+    autoCompletions.events.length = Math.min(autoCompletions.events.length, MAX_AUTO_COMPLETIONS);
     localStorage.setItem("autoCompletions", JSON.stringify(autoCompletions));
 }
 
@@ -124,6 +126,24 @@ function loadAutoCompletions() {
     autoCompletions = JSON.parse(localStorage.getItem("autoCompletions"));
     if (autoCompletions === null) {
         autoCompletions = {events: []};
+        return;
+    }
+
+    // Older versions appended every save, so tidy up lists saved by them: keep only the most
+    // recent copy of each title/calendar pair, and only the most recent MAX_AUTO_COMPLETIONS.
+    let seen = new Set();
+    let events = [];
+    for (let x of autoCompletions.events) {
+        let calendar = normaliseCalendarName(x.calendar);
+        let key = JSON.stringify([x.title, calendar]);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        events.push({title: x.title, calendar: calendar});
+        if (events.length === MAX_AUTO_COMPLETIONS) break;
+    }
+    if (events.length !== autoCompletions.events.length) {
+        autoCompletions.events = events;
+        localStorage.setItem("autoCompletions", JSON.stringify(autoCompletions));
     }
 }
 
